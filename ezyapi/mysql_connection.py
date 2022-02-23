@@ -1,8 +1,22 @@
 import mysql.connector
 
 
-connection = mysql.connector.connect(host="luzog.xyz", user="dev", password="root", database="ezy")
-cursor = connection.cursor()
+connection: mysql.connector.connection.MySQLConnection = None
+cursor = None
+
+
+class DatabaseConnexionError(Exception):
+    def __init__(self):
+        super().__init__("Cannot connect to the database")
+
+
+def connexion():
+    global connection, cursor
+    try:
+        connection = mysql.connector.connect(host="luzog.xyz", user="dev", password="root", database="ezy")
+        cursor = connection.cursor()
+    except mysql.connector.errors.InterfaceError:
+        raise DatabaseConnexionError()
 
 
 def execute(operation, param: tuple = (), multi: bool = False):

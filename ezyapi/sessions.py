@@ -1,5 +1,5 @@
-import mysql_connection as connect
-from UUID import UUID
+import ezyapi.mysql_connection as connect
+from ezyapi.UUID import UUID
 
 
 class UserNotFoundException(Exception):
