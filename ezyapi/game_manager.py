@@ -271,7 +271,7 @@ class Resource:
             f.write(self.bin)
 
 
-__API_VERSION: GameVersion = GameVersion("v2.4")
+__API_VERSION: GameVersion = GameVersion("v2.5")
 __current_version: GameVersion = None
 __game_info: GameInfo = None
 __user: sessions.User = None
@@ -347,26 +347,34 @@ def export_resource(id: str, name: str, type: str, bin: bytes, specification: st
     return int(connect.fetch(1)[0])
 
 
-def import_resource(id: str | UUID, specification: str) -> Resource:
+def import_resource(id: str | UUID, specification: str) -> list[Resource]:
     connect.execute(f"""SELECT * FROM resources WHERE id = '{id}' AND specification = '{specification}'""")
     cont = connect.fetch()
     if not len(cont):
         raise ResourceNotFound(id, specification)
-    fin = cont[-1]
-    v = GameVersion()
-    for f in cont:
-        try:
-            if GameVersion(f[7]) > v:
-                v = GameVersion(f[7])
-                fin = f
-        except FormatError:
-            continue
-    return Resource(*fin)
+    res = []
+    dif = list(set(f[2] for f in cont))
+    for d in dif:
+        c = [f for f in cont if f[2] == d]
+        fin = c[-1]
+        v = GameVersion()
+        for f in c:
+            try:
+                if GameVersion(f[7]) > v:
+                    v = GameVersion(f[7])
+                    fin = f
+            except FormatError:
+                continue
+        res.append(Resource(*fin))
+    return res
 
 
 def import_resources(id: str | UUID) -> list[Resource]:
     connect.execute(f"""SELECT id, specification FROM resources WHERE id = '{id}'""")
-    return [import_resource(id, sp) for id, sp in connect.fetch()]
+    l = []
+    for id, sp in connect.fetch():
+        l += import_resource(id, sp)
+    return l
 
 
 def updated():

@@ -20,7 +20,7 @@ Elle va donc faire en sorte de télécharger les ressources manquantes depuis la
 ## Informations complémentaires
 
 __**Nom**__ : EzyAPI<br>
-__**Version**__ : `v2.3`<br>
+__**Version**__ : `v2.5`<br>
 __**Version de Python**__ : Python 1.10<br>
 __**Developpeur**__ : Luzog<br>
 __**Dépendances**__ : [os, sys, shutil, subprocess, hashlib, mysql-connector-python]
